@@ -2,226 +2,245 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎰 ONLINE MASTER SLOT 🎰</title>
-    
+    <title>🎰 온라인 어드민 슬롯머신 🎰</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-
+    
     <style>
-        /* --- [디자인: 기존 스타일 유지 + 로그인 창] --- */
-        body { background-color: #1a1a1a; color: white; font-family: 'Malgun Gothic', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        /* --- [기존 디자인 유지] --- */
+        body { font-family: 'Malgun Gothic', sans-serif; background-color: #2c3e50; color: white; text-align: center; margin: 0; padding: 0; user-select: none; }
+        #balance-ui { position: absolute; top: 20px; right: 30px; font-size: 24px; font-weight: bold; background: rgba(0, 0, 0, 0.5); padding: 15px 25px; border-radius: 10px; border: 2px solid #f1c40f; }
+        h1 { margin-top: 80px; color: #ecf0f1; }
+        .slot-container { display: flex; justify-content: center; gap: 15px; margin: 30px 0; }
+        .slot { width: 120px; height: 120px; background: #ecf0f1; border-radius: 15px; border: 5px solid #bdc3c7; font-size: 70px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.2); color: black; }
+        #message { height: 40px; font-size: 22px; font-weight: bold; color: #f1c40f; margin-bottom: 20px; }
+        .controls { background: #34495e; padding: 20px; border-radius: 15px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.3); margin-bottom: 30px; max-width: 650px; }
+        .bet-info { font-size: 20px; margin-bottom: 15px; }
+        .bet-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
+        button { padding: 10px 15px; font-size: 16px; cursor: pointer; border: none; border-radius: 8px; font-weight: bold; transition: 0.2s; }
+        button:hover { filter: brightness(1.1); }
+        button:active { transform: scale(0.95); }
+        .btn-bet { background: #3498db; color: white; }
+        .btn-bet-high { background: #9b59b6; color: white; }
+        .btn-spin { background: #e74c3c; color: white; font-size: 24px; padding: 15px 40px; display: block; margin: 20px auto 0; width: 100%; box-sizing: border-box;}
+        .grind-area { background: #27ae60; padding: 20px; border-radius: 15px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .btn-grind { background: #f1c40f; color: #2c3e50; font-size: 20px; padding: 15px 30px; margin-top: 10px; }
         
-        /* 로그인 화면 */
+        /* --- [추가된 로그인 및 콘솔 디자인] --- */
         #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .modal { background: #2c3e50; padding: 40px; border-radius: 20px; border: 3px solid #f1c40f; text-align: center; box-shadow: 0 0 50px rgba(241, 196, 15, 0.3); }
-        .modal input { padding: 10px; margin: 10px; border-radius: 5px; border: none; width: 200px; font-size: 16px; }
-        .btn-main { padding: 15px 30px; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 10px; border: none; transition: 0.2s; }
-        .btn-google { background: #db4437; color: white; margin-bottom: 20px; }
-        .btn-start { background: #27ae60; color: white; }
-
-        /* 게임 UI */
-        #game-ui { display: none; text-align: center; }
-        .status-bar { position: absolute; top: 20px; right: 20px; font-size: 18px; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 30px; border: 1px solid #f1c40f; }
-        .slot-machine { background: #34495e; padding: 30px; border-radius: 20px; border: 10px solid #f1c40f; display: flex; gap: 15px; margin-bottom: 30px; }
-        .slot { width: 120px; height: 150px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 80px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
-        .spin-btn { width: 200px; height: 60px; font-size: 24px; background: #e74c3c; color: white; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 5px #c0392b; }
-        .spin-btn:active { transform: translateY(4px); box-shadow: 0 1px #c0392b; }
-
-        /* 어드민 콘솔 */
-        #admin-console { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #000; padding: 10px; color: #2ecc71; font-family: monospace; z-index: 10000; border-top: 2px solid #2ecc71; }
-        #console-input { background: none; border: none; color: #2ecc71; width: 85%; outline: none; font-size: 18px; margin-left: 10px; }
+        .modal { background: #34495e; padding: 40px; border-radius: 20px; border: 3px solid #f1c40f; text-align: center; }
+        .modal input { padding: 10px; margin: 10px; border-radius: 5px; border: none; width: 220px; font-size: 16px; }
+        #console { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0, 0, 0, 0.9); padding: 15px; box-sizing: border-box; text-align: left; border-top: 2px solid #2ecc71; z-index: 1000; }
+        #console-input { width: 80%; background: transparent; border: none; color: #2ecc71; font-size: 18px; outline: none; font-family: monospace; }
+        #console-prefix { color: #2ecc71; font-size: 18px; font-family: monospace; margin-right: 10px; }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
         <div id="step-1" class="modal">
-            <h1 style="color: #f1c40f; margin-top: 0;">🎰 MASTER SLOT</h1>
-            <p>온라인 저장을 위해 로그인이 필요합니다.</p>
-            <button class="btn-main btn-google" onclick="window.game.login()">Google 계정 인증</button>
+            <h1 style="margin-top:0;">🚀 게임 접속</h1>
+            <button onclick="window.game.login()" style="padding: 15px 30px; background:#4285F4; color:white; border:none; border-radius:10px; cursor:pointer; font-size:18px;">Google 계정으로 시작</button>
         </div>
-
-        <div id="step-2" class="modal" style="display: none;">
+        <div id="step-2" class="modal" style="display:none;">
             <h2>📝 프로필 생성</h2>
-            <p>사용할 게임 아이디와 비번을 정해주세요.</p>
-            <input type="text" id="reg-id" placeholder="게임 닉네임"><br>
-            <input type="password" id="reg-pw" placeholder="비밀번호"><br>
-            <button class="btn-main btn-start" onclick="window.game.completeRegistration()">게임 접속하기</button>
+            <input type="text" id="reg-id" placeholder="사용할 닉네임"><br>
+            <input type="password" id="reg-pw" placeholder="비밀번호 설정"><br>
+            <button onclick="window.game.completeReg()" style="padding: 10px 20px; background:#27ae60; color:white; border:none; border-radius:5px; cursor:pointer; margin-top:10px;">게임 시작하기</button>
         </div>
     </div>
 
-    <div id="game-ui">
-        <div class="status-bar">
-            👤 <span id="display-id">Guest</span> | 💰 <span id="display-balance">0</span>원
+    <div id="game-ui" style="display:none;">
+        <div id="balance-ui">총 소지금: <span id="balance">0</span>원</div>
+        <h1>🎰 어드민 슬롯머신 🎰</h1>
+        <div class="slot-container">
+            <div class="slot" id="slot1">❓</div>
+            <div class="slot" id="slot2">❓</div>
+            <div class="slot" id="slot3">❓</div>
         </div>
-
-        <h1 style="font-size: 40px; color: #f1c40f; text-shadow: 0 0 20px rgba(241, 196, 15, 0.5);">PREMIUM SLOT</h1>
-
-        <div class="slot-machine">
-            <div class="slot" id="s1">❓</div>
-            <div class="slot" id="s2">❓</div>
-            <div class="slot" id="s3">❓</div>
+        <div id="message">환영합니다! 명령어를 사용하려면 ` 키를 누르세요.</div>
+        <div class="controls">
+            <div class="bet-info">현재 베팅금: <span id="current-bet">0</span>원</div>
+            <div class="bet-buttons">
+                <button class="btn-bet" onclick="window.game.addBet(1)">+1</button>
+                <button class="btn-bet" onclick="window.game.addBet(10)">+10</button>
+                <button class="btn-bet" onclick="window.game.addBet(100)">+100</button>
+                <button class="btn-bet-high" onclick="window.game.addBet(1000)">+1K</button>
+                <button class="btn-bet-high" onclick="window.game.addBet(10000)">+10K</button>
+                <button class="btn-bet-high" onclick="window.game.addBet(100000)">+100K</button>
+                <button class="btn-bet-high" onclick="window.game.addBet(1000000)">+1M</button>
+                <button class="btn-bet-high" onclick="window.game.addBet(10000000)">+10M</button>
+                <button onclick="window.game.resetBet()" style="background: #95a5a6; color: white;">초기화</button>
+            </div>
+            <button class="btn-spin" onclick="window.game.spin()">🚀 실행</button>
         </div>
-
-        <button class="spin-btn" onclick="window.game.spin()">SPIN! (100원)</button>
-        <p id="msg" style="margin-top: 20px; font-size: 20px; font-weight: bold;"></p>
+        <br>
+        <div class="grind-area">
+            <div style="font-size: 18px; font-weight: bold;">[ 클릭 노동 ] 10번 누르면 1원 지급</div>
+            <div style="margin-top: 5px;">현재 진행도: <span id="grind-count">0</span> / 10</div>
+            <button class="btn-grind" onclick="window.game.grind()">⛏️ 돈 벌기</button>
+        </div>
     </div>
 
-    <div id="admin-console">
-        <span>admin@system:~$</span>
-        <input type="text" id="console-input" placeholder="명령어를 입력하세요...">
+    <div id="console">
+        <span id="console-prefix">>_</span>
+        <input type="text" id="console-input" placeholder="커맨드 입력: /set me coin 1000" autocomplete="off">
     </div>
 
     <script>
-    /* --- [보안 클로저 구역] --- */
     (function() {
-        // -------------------------------------------------------
-        // 🔥 여기에 본인의 Firebase 설정값을 복사해서 넣으세요!
-        // -------------------------------------------------------
+        // --- ⚙️ 설정 구역 ---
         const firebaseConfig = {
-  apiKey: "AIzaSyBF9sb_UYjPt6J_O7g6p4FkLSbggUC6cfM",
-  authDomain: "gumurings-slot-game.firebaseapp.com",
-  projectId: "gumurings-slot-game",
-  storageBucket: "gumurings-slot-game.firebasestorage.app",
-  messagingSenderId: "1006027725856",
-  appId: "1:1006027725856:web:b7e5d7b55eac14dc377045"
-};
-        const ADMIN_EMAIL = "gumuring123@gmail.com"; // 👈 어드민 권한 부여
-        // -------------------------------------------------------
+		apiKey: "AIzaSyBF9sb_UYjPt6J_O7g6p4FkLSbggUC6cfM",
+		authDomain: "gumurings-slot-game.firebaseapp.com",
+		projectId: "gumurings-slot-game",
+		storageBucket: "gumurings-slot-game.firebasestorage.app",
+		messagingSenderId: "1006027725856",
+		appId: "1:1006027725856:web:b7e5d7b55eac14dc377045"
+		};
+        const ADMIN_EMAIL = "gumuring123@gmail.com"; // 👈 치트 권한용 이메일
+        // ------------------
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
         let balance = 0;
+        let currentBet = 0;
+        let grindCount = 0;
         let myUID = "";
-        const icons = ['💎', '💰', '🍀', '🍒', '💣'];
+
+        const multipliers = { '💎': 10, '💲': 7, '💰': 5, '🍀': 3, '☢️': 1.1, '💣': 0 };
+        const probabilities = { '💎': 5, '💲': 10, '💰': 13, '🍀': 17, '☢️': 25, '💣': 30 };
+        const symbols = Object.keys(probabilities);
 
         window.game = {
-            // 구글 로그인
             login: async function() {
-                try {
-                    const provider = new firebase.auth.GoogleAuthProvider();
-                    const result = await auth.signInWithPopup(provider);
-                    myUID = result.user.uid;
-                    this.checkUserRecord();
-                } catch(e) { alert("로그인 중 오류가 발생했습니다."); }
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const res = await auth.signInWithPopup(provider);
+                myUID = res.user.uid;
+                this.checkUser();
             },
-
-            // 유저 기록 확인
-            checkUserRecord: async function() {
+            checkUser: async function() {
                 const doc = await db.collection("users").doc(myUID).get();
                 if (doc.exists) {
                     balance = doc.data().balance;
-                    this.launch(doc.data().gameId);
+                    this.start(doc.data().gameId);
                 } else {
                     document.getElementById('step-1').style.display = 'none';
                     document.getElementById('step-2').style.display = 'block';
                 }
             },
-
-            // 프로필 등록
-            completeRegistration: async function() {
+            completeReg: async function() {
                 const gid = document.getElementById('reg-id').value;
-                const gpw = document.getElementById('reg-pw').value;
-                if(!gid) return alert("아이디를 입력하세요!");
-
-                await db.collection("users").doc(myUID).set({
-                    gameId: gid,
-                    gamePw: gpw,
-                    balance: 1000,
-                    email: auth.currentUser.email,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                if(!gid) return alert("닉네임을 입력하세요.");
+                await db.collection("users").doc(myUID).set({ gameId: gid, balance: 1000, email: auth.currentUser.email });
                 balance = 1000;
-                this.launch(gid);
+                this.start(gid);
             },
-
-            // 게임 화면 진입
-            launch: function(id) {
+            start: function(id) {
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('game-ui').style.display = 'block';
-                document.getElementById('display-id').innerText = id;
-                this.render();
+                this.updateUI();
             },
-
-            // 슬롯 돌리기 로직
-            spin: async function() {
-                if(balance < 100) return this.log("소지금이 부족합니다!", "#e74c3c");
-
-                balance -= 100;
-                this.render();
-
-                // 애니메이션 효과 (간이)
-                const slots = [document.getElementById('s1'), document.getElementById('s2'), document.getElementById('s3')];
-                const results = [];
-
-                slots.forEach((s, i) => {
-                    const res = icons[Math.floor(Math.random() * icons.length)];
-                    results.push(res);
-                    s.innerText = res;
-                });
-
-                // 결과 판정
-                if (results[0] === results[1] && results[1] === results[2]) {
-                    const winAmount = 2000;
-                    balance += winAmount;
-                    this.log(`🎊 잭팟!! ${winAmount}원 획득! 🎊`, "#f1c40f");
-                } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
-                    const winAmount = 150;
-                    balance += winAmount;
-                    this.log(`✨ 더블! ${winAmount}원 회수!`, "#2ecc71");
-                } else {
-                    this.log("꽝입니다. 다시 도전하세요!", "#bdc3c7");
+            updateUI: function() {
+                document.getElementById('balance').innerText = Math.floor(balance).toLocaleString();
+                document.getElementById('current-bet').innerText = currentBet.toLocaleString();
+                document.getElementById('grind-count').innerText = grindCount;
+            },
+            addBet: function(amount) {
+                currentBet += amount;
+                this.updateUI();
+            },
+            resetBet: function() {
+                currentBet = 0;
+                this.updateUI();
+            },
+            grind: async function() {
+                grindCount++;
+                if (grindCount >= 10) {
+                    balance += 1;
+                    grindCount = 0;
+                    this.showMessage("1원을 벌었습니다!", "#2ecc71");
+                    await db.collection("users").doc(myUID).update({ balance: balance });
                 }
+                this.updateUI();
+            },
+            spin: async function() {
+                if (currentBet <= 0) return this.showMessage("베팅금을 설정하세요!", "#e74c3c");
+                if (currentBet > balance) return this.showMessage("소지금이 부족합니다!", "#e74c3c");
 
-                this.render();
-                // DB 실시간 저장
+                balance -= currentBet;
+                let result = [this.getRandomSymbol(), this.getRandomSymbol(), this.getRandomSymbol()];
+                document.getElementById('slot1').innerText = result[0];
+                document.getElementById('slot2').innerText = result[1];
+                document.getElementById('slot3').innerText = result[2];
+
+                let counts = {};
+                result.forEach(s => counts[s] = (counts[s] || 0) + 1);
+                let won = false; let winSymbol = null;
+                for (let s in counts) { if (counts[s] >= 2) { won = true; winSymbol = s; break; } }
+
+                if (won) {
+                    let m = multipliers[winSymbol];
+                    let prize = currentBet * m;
+                    balance += prize;
+                    this.showMessage(m === 0 ? `[${winSymbol}] 꽝! (0배)` : `🎉 당첨! [${winSymbol}] ${m}배! ${Math.floor(prize).toLocaleString()}원 획득!`, "#f1c40f");
+                } else {
+                    this.showMessage("아쉽네요!", "#95a5a6");
+                }
+                this.updateUI();
                 await db.collection("users").doc(myUID).update({ balance: balance });
             },
-
-            render: function() {
-                document.getElementById('display-balance').innerText = Math.floor(balance).toLocaleString();
+            getRandomSymbol: function() {
+                let rand = Math.random() * 100; let sum = 0;
+                for (let symbol in probabilities) {
+                    sum += probabilities[symbol];
+                    if (rand < sum) return symbol;
+                }
             },
-
-            log: function(m, color) {
-                const el = document.getElementById('msg');
-                el.innerText = m;
-                el.style.color = color;
+            showMessage: function(text, color) {
+                const m = document.getElementById('message');
+                m.innerText = text; m.style.color = color;
             }
         };
 
-        // --- 어드민 시스템 ( ` 키) ---
+        // 명령어 시스템
+        const consoleEl = document.getElementById('console');
+        const consoleInput = document.getElementById('console-input');
+
         document.addEventListener('keydown', (e) => {
             if (e.key === '`') {
                 e.preventDefault();
-                if (auth.currentUser && auth.currentUser.email === ADMIN_EMAIL) {
-                    const con = document.getElementById('admin-console');
-                    con.style.display = con.style.display === 'block' ? 'none' : 'block';
-                    document.getElementById('console-input').focus();
+                if (auth.currentUser?.email !== ADMIN_EMAIL) return;
+                if (consoleEl.style.display === 'block') {
+                    consoleEl.style.display = 'none';
+                    consoleInput.blur();
                 } else {
-                    console.warn("접근 권한이 없습니다.");
+                    consoleEl.style.display = 'block';
+                    consoleInput.focus();
                 }
             }
         });
 
-        document.getElementById('console-input').addEventListener('keydown', async (e) => {
+        consoleInput.addEventListener('keydown', async (e) => {
             if (e.key === 'Enter') {
-                const val = e.target.value;
-                const cmd = val.split(' ');
+                let parts = consoleInput.value.trim().split(' ');
+                consoleInput.value = '';
+                consoleEl.style.display = 'none';
 
-                if (cmd[0] === '/set' && cmd[1] === 'me' && cmd[2] === 'coin') {
-                    balance = parseInt(cmd[3]);
-                    window.game.render();
-                    await db.collection("users").doc(myUID).update({ balance: balance });
-                    alert("치트 적용 완료: " + balance);
+                if (parts[0] === '/set' && parts[1] === 'me' && parts[2] === 'coin') {
+                    let val = parseInt(parts[3]);
+                    if (!isNaN(val)) {
+                        balance = val;
+                        window.game.updateUI();
+                        await db.collection("users").doc(myUID).update({ balance: balance });
+                        window.game.showMessage(`[치트] 소지금을 ${val.toLocaleString()}원으로 변경`, "#3498db");
+                    }
                 }
-                e.target.value = '';
             }
         });
-
     })();
     </script>
 </body>
