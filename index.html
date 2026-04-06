@@ -8,135 +8,128 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* --- [🌟 VIP 라스베이거스 카지노 스타일] --- */
+        /* --- [스타일: 기존 네온 디자인 + 출석체크 추가] --- */
         @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap');
 
         body { font-family: 'Malgun Gothic', sans-serif; background: radial-gradient(circle at center, #1a0033 0%, #000000 100%); color: white; text-align: center; margin: 0; padding: 0; user-select: none; overflow-x: hidden; }
         
-        #balance-ui { position: absolute; top: 20px; right: 30px; font-size: 20px; font-weight: bold; background: linear-gradient(145deg, #111, #222); padding: 15px 25px; border-radius: 15px; border: 2px solid #ffd700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(255, 215, 0, 0.2); text-align: right; min-width: 180px; z-index: 100; }
+        /* 상단 UI 레이아웃 */
+        #balance-ui { position: absolute; top: 20px; right: 30px; font-size: 20px; font-weight: bold; background: linear-gradient(145deg, #111, #222); padding: 15px 25px; border-radius: 15px; border: 2px solid #ffd700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); z-index: 100; min-width: 180px; }
+        #attendance-btn { position: absolute; top: 20px; left: 30px; padding: 12px 20px; background: linear-gradient(180deg, #ff00de, #9b0082); color: white; border: 2px solid #fff; border-radius: 10px; cursor: pointer; font-weight: bold; box-shadow: 0 0 15px #ff00de; z-index: 100; transition: 0.3s; }
+        #attendance-btn:hover { transform: scale(1.1); box-shadow: 0 0 25px #ff00de; }
+
         .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: #ecf0f1; border-bottom: 1px solid #555; padding-bottom: 8px; }
-        .logout-btn { cursor: pointer; font-size: 20px; transition: 0.3s; text-decoration: none; }
-        .logout-btn:hover { transform: scale(1.3) rotate(15deg); filter: drop-shadow(0 0 5px #ff4757); }
-        .money-info { font-size: 26px; color: #ffd700; text-shadow: 0 0 10px #ffd700; transition: color 0.3s; }
+        .money-info { font-size: 26px; color: #ffd700; text-shadow: 0 0 10px #ffd700; }
 
-        h1 { margin-top: 80px; font-family: 'Black Han Sans', sans-serif; font-size: 55px; color: #fff; text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #ff00de, 0 0 40px #ff00de, 0 0 80px #ff00de, 0 0 100px #ff00de; animation: neon-pulse 1.5s infinite alternate; }
-        @keyframes neon-pulse { from { text-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px #ff00de, 0 0 20px #ff00de, 0 0 30px #ff00de; } to { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 80px #00ffff; } }
+        /* 슬롯 & 메시지 */
+        h1 { margin-top: 80px; font-family: 'Black Han Sans', sans-serif; font-size: 55px; color: #fff; text-shadow: 0 0 20px #ff00de; animation: neon-pulse 1.5s infinite alternate; }
+        .slot-container { display: inline-flex; justify-content: center; gap: 20px; margin: 30px 0; background: #111; padding: 30px 40px; border-radius: 25px; border: 4px solid #333; box-shadow: 0 0 30px #ff00de; position: relative; }
+        .slot { width: 130px; height: 140px; background: linear-gradient(180deg, #ddd, #fff, #aaa); border-radius: 15px; font-size: 80px; display: flex; justify-content: center; align-items: center; color: black; box-shadow: inset 0 10px 20px rgba(0,0,0,0.3); }
+        #message { height: 40px; font-size: 26px; font-weight: bold; color: #ffd700; margin-bottom: 20px; }
 
-        .slot-container { display: inline-flex; justify-content: center; gap: 20px; margin: 30px 0; background: #111; padding: 30px 40px; border-radius: 25px; border: 4px solid #333; box-shadow: 0 0 30px #ff00de, inset 0 0 20px #000; position: relative; }
-        .slot-container::before { content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; border-radius: 30px; border: 2px solid #00ffff; pointer-events: none; box-shadow: 0 0 15px #00ffff; animation: border-flicker 2s infinite; }
-        @keyframes border-flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        /* 컨트롤 패널 */
+        .controls { background: #1a252f; padding: 25px; border-radius: 20px; display: inline-block; border: 1px solid #444; max-width: 700px; }
+        .bet-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 15px 0; }
+        button { padding: 10px 15px; cursor: pointer; border: none; border-radius: 8px; font-weight: bold; color: white; transition: 0.2s; background: #3498db; }
+        button:active { transform: translateY(3px); }
+        .btn-spin { background: linear-gradient(180deg, #ff4757, #ff1e34); font-size: 28px; padding: 15px; width: 100%; margin-top: 10px; border-radius: 12px; }
 
-        .slot { width: 130px; height: 140px; background: linear-gradient(180deg, #dddddd 0%, #ffffff 50%, #aaaaaa 100%); border-radius: 15px; border: 4px solid #222; font-size: 80px; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 30px 30px rgba(0,0,0,0.5), inset 0 -30px 30px rgba(0,0,0,0.5), 0 10px 15px rgba(0,0,0,0.8); color: black; text-shadow: 0 5px 5px rgba(0,0,0,0.3); }
+        /* 채굴 구역 */
+        .grind-area { background: #092814; padding: 20px; border-radius: 15px; display: inline-block; border: 2px solid #2ecc71; margin-top: 20px; }
+        .btn-grind { background: #f1c40f; color: black; font-size: 18px; padding: 10px 20px; }
 
-        #message { height: 40px; font-size: 26px; font-weight: bold; color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); margin-bottom: 20px; transition: 0.3s; }
-
-        .controls { background: linear-gradient(145deg, #2c3e50, #1a252f); padding: 25px; border-radius: 20px; display: inline-block; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 2px 2px rgba(255,255,255,0.1); margin-bottom: 30px; max-width: 700px; border: 1px solid #444; }
-        .bet-info { font-size: 22px; margin-bottom: 15px; color: #00ffff; text-shadow: 0 0 8px #00ffff; }
-        .bet-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-        button { padding: 12px 18px; font-size: 16px; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; transition: all 0.2s ease; text-transform: uppercase; color: white; box-shadow: 0 5px 0 rgba(0,0,0,0.5); }
-        button:active { transform: translateY(5px); box-shadow: 0 0px 0 rgba(0,0,0,0.5); }
-        .btn-bet { background: linear-gradient(180deg, #3498db, #2980b9); }
-        .btn-bet:hover { background: linear-gradient(180deg, #5dade2, #3498db); box-shadow: 0 5px 15px #3498db; }
-        .btn-bet-high { background: linear-gradient(180deg, #9b59b6, #8e44ad); }
-        .btn-bet-high:hover { background: linear-gradient(180deg, #af7ac5, #9b59b6); box-shadow: 0 5px 15px #9b59b6; }
-
-        .btn-spin { background: linear-gradient(180deg, #ff4757, #ff1e34); color: white; font-size: 30px; padding: 20px 40px; display: block; margin: 25px auto 0; width: 100%; box-sizing: border-box; border-radius: 15px; box-shadow: 0 8px 0 #8b0000, 0 15px 20px rgba(255, 30, 52, 0.6); text-shadow: 0 2px 4px rgba(0,0,0,0.5); animation: spin-pulse 2s infinite; }
-        .btn-spin:hover { filter: brightness(1.2); box-shadow: 0 8px 0 #8b0000, 0 0 30px #ff4757; }
-        .btn-spin:active { transform: translateY(8px); box-shadow: 0 0px 0 #8b0000, 0 0 10px #ff4757; }
-        @keyframes spin-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
-
-        .grind-area { background: linear-gradient(145deg, #0d3b1e, #092814); padding: 20px; border-radius: 15px; display: inline-block; box-shadow: 0 0 15px #27ae60; border: 2px solid #2ecc71; }
-        .btn-grind { background: linear-gradient(180deg, #f1c40f, #f39c12); color: #000; font-size: 20px; padding: 15px 30px; margin-top: 10px; box-shadow: 0 5px 0 #b9770e; }
-        .btn-grind:hover { filter: brightness(1.2); box-shadow: 0 5px 15px #f1c40f; }
-        
-        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
-        .modal { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #00ffff; text-align: center; width: 320px; box-shadow: 0 0 30px rgba(0, 255, 255, 0.3); }
-        .modal input { padding: 15px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; width: 90%; font-size: 16px; box-sizing: border-box; background: #222; color: #00ffff; text-align: center; outline: none; }
-        .modal input:focus { border-color: #00ffff; box-shadow: 0 0 10px #00ffff; }
-        
-        #console { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0, 0, 0, 0.95); padding: 15px; box-sizing: border-box; text-align: left; border-top: 2px solid #ff00de; z-index: 10000; box-shadow: 0 -5px 20px rgba(255, 0, 222, 0.5); }
-        #console-input { width: 80%; background: transparent; border: none; color: #ff00de; font-size: 18px; outline: none; font-family: monospace; font-weight: bold; }
-        #console-prefix { color: #00ffff; font-size: 18px; font-family: monospace; margin-right: 10px; font-weight: bold; }
+        /* 모달 & 콘솔 */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #00ffff; text-align: center; width: 320px; }
+        .modal input { padding: 12px; margin: 10px 0; width: 90%; background: #222; color: #00ffff; border: 1px solid #444; text-align: center; }
+        #console { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0, 0, 0, 0.9); padding: 15px; border-top: 2px solid #ff00de; z-index: 10000; text-align: left; }
+        #console-input { background: transparent; border: none; color: #ff00de; font-size: 18px; outline: none; width: 80%; font-family: monospace; }
     </style>
 </head>
 <body>
 
+    <div id="attendance-overlay" class="modal-overlay">
+        <div class="modal" style="border-color: #ff00de;">
+            <h2 style="color: #ff00de;">📅 DAILY CHECK-IN</h2>
+            <p id="att-status">정보를 불러오는 중...</p>
+            <p id="att-streak" style="font-size: 18px; color: #00ffff; font-weight: bold;"></p>
+            <button id="do-att-btn" onclick="window.game.doAttendance()" style="background: #2ecc71; width: 100%; padding: 15px; display:none;">보상 받기</button>
+            <button onclick="document.getElementById('attendance-overlay').style.display='none'" style="margin-top:10px; background:#555;">닫기</button>
+        </div>
+    </div>
+
     <div id="auth-overlay">
         <div id="step-login" class="modal">
-            <h1 style="margin-top:0; color:#00ffff; font-size: 40px; animation: none; text-shadow: 0 0 20px #00ffff;">🎰 CASINO VIP</h1>
+            <h1 style="margin:0 0 20px 0; font-size: 30px; color:#00ffff;">🎰 CASINO LOGIN</h1>
             <input type="text" id="login-id" placeholder="아이디"><br>
             <input type="password" id="login-pw" placeholder="비밀번호"><br>
-            <button onclick="window.game.loginIdPw()" style="padding: 15px; background:linear-gradient(180deg, #2ecc71, #27ae60); color:white; border-radius:8px; width:100%; margin-top:15px; font-size: 18px; box-shadow: 0 4px 0 #1e8449;">로그인</button>
-            <hr style="border:0; border-top:1px solid #444; margin: 30px 0;">
-            <p style="font-size: 14px; color: #aaa; margin-bottom:15px;">VIP 멤버십이 없으신가요?</p>
-            <button onclick="window.game.registerGoogle()" style="padding: 12px; background:linear-gradient(180deg, #4285F4, #2b60bd); color:white; border-radius:8px; width:100%; box-shadow: 0 4px 0 #1c4587;">구글로 아이디 생성하기</button>
+            <button onclick="window.game.loginIdPw()" style="width:100%; padding:15px; background:#2ecc71; margin-top:10px;">로그인</button>
+            <hr style="border:0; border-top:1px solid #444; margin: 20px 0;">
+            <button onclick="window.game.registerGoogle()" style="width:100%; background:#4285F4;">구글로 아이디 생성</button>
         </div>
         <div id="step-register" class="modal" style="display:none;">
-            <h2 style="color:#ff00de; text-shadow: 0 0 10px #ff00de;">📝 VIP 카드 발급</h2>
-            <p style="font-size:14px; color: #aaa;">사용할 아이디와 비밀번호를 정해주세요.</p>
+            <h2 style="color:#ff00de;">📝 ID 설정</h2>
             <input type="text" id="reg-id" placeholder="사용할 아이디"><br>
-            <input type="password" id="reg-pw" placeholder="비밀번호 설정"><br>
-            <button onclick="window.game.completeReg()" style="padding: 15px; background:linear-gradient(180deg, #ff00de, #c000a6); color:white; border-radius:8px; width:100%; margin-top:15px; font-size: 18px; box-shadow: 0 4px 0 #820070;">발급 완료</button>
+            <input type="password" id="reg-pw" placeholder="비밀번호"><br>
+            <button onclick="window.game.completeReg()" style="width:100%; background:#ff00de; padding:15px;">발급 완료</button>
         </div>
     </div>
 
     <div id="game-ui" style="display:none;">
+        <button id="attendance-btn" onclick="window.game.openAttendance()">📅 출석체크</button>
+        
         <div id="balance-ui">
             <div class="user-info">
                 <span>👤 <span id="display-id" style="color: #00ffff;">Guest</span></span>
-                <span class="logout-btn" onclick="window.game.logout()" title="로그아웃">🚪</span>
+                <span style="cursor:pointer;" onclick="location.reload()">🚪</span>
             </div>
             <div class="money-info">💰 <span id="balance">0</span></div>
         </div>
 
-        <h1>✨ MEGA JACKPOT SLOT ✨</h1>
+        <h1>✨ MEGA JACKPOT ✨</h1>
         <div class="slot-container">
             <div class="slot" id="slot1">❓</div>
             <div class="slot" id="slot2">❓</div>
             <div class="slot" id="slot3">❓</div>
         </div>
-        <div id="message">환영합니다! 행운을 빕니다!</div>
+        <div id="message">행운을 빌어보세요!</div>
+
         <div class="controls">
-            <div class="bet-info">🔥 현재 베팅금: <span id="current-bet">0</span>원</div>
+            <div style="color:#00ffff;">🔥 베팅금: <span id="current-bet">0</span></div>
             <div class="bet-buttons">
-                <button class="btn-bet" onclick="window.game.addBet(1)">+1</button>
-                <button class="btn-bet" onclick="window.game.addBet(10)">+10</button>
-                <button class="btn-bet" onclick="window.game.addBet(100)">+100</button>
-                <button class="btn-bet-high" onclick="window.game.addBet(1000)">+1K</button>
-                <button class="btn-bet-high" onclick="window.game.addBet(10000)">+10K</button>
-                <button class="btn-bet-high" onclick="window.game.addBet(100000)">+100K</button>
-                <button class="btn-bet-high" onclick="window.game.addBet(1000000)">+1M</button>
-                <button class="btn-bet-high" onclick="window.game.addBet(10000000)">+10M</button>
-                <button onclick="window.game.resetBet()" style="background: linear-gradient(180deg, #7f8c8d, #616a6b); box-shadow: 0 5px 0 #4d5656; color: white;">초기화</button>
+                <button onclick="window.game.addBet(1)">+1</button>
+                <button onclick="window.game.addBet(10)">+10</button>
+                <button onclick="window.game.addBet(100)">+100</button>
+                <button onclick="window.game.addBet(1000)" style="background:#9b59b6;">+1K</button>
+                <button onclick="window.game.addBet(1000000)" style="background:#e67e22;">+1M</button>
+                <button onclick="window.game.resetBet()" style="background:#7f8c8d;">리셋</button>
             </div>
-            <button class="btn-spin" onclick="window.game.spin()">🎰 SPIN TO WIN!</button>
+            <button class="btn-spin" onclick="window.game.spin()">🎰 SPIN!</button>
         </div>
+
         <br>
         <div class="grind-area">
-            <div style="font-size: 18px; font-weight: bold; color: #fff;">[ 무료 코인 충전소 ] 10번 클릭 시 1원 지급</div>
-            <div style="margin-top: 5px; color: #aaa;">진행도: <span id="grind-count" style="color: #2ecc71; font-weight: bold;">0</span> / 10</div>
+            <div>[ 무료 코인 채굴 ] 진행도: <span id="grind-count">0</span> / 10</div>
             <button class="btn-grind" onclick="window.game.grind()">⛏️ 코인 캐기</button>
         </div>
     </div>
 
     <div id="console">
-        <span id="console-prefix">ADMIN@ROOT:~$</span>
-        <input type="text" id="console-input" placeholder="명령어 입력... (예: /give admin coin 1000)" autocomplete="off">
+        <span style="color:#00ffff; font-family:monospace;">ADMIN@ROOT:~$</span>
+        <input type="text" id="console-input" placeholder="명령어 입력..." autocomplete="off">
     </div>
 
     <script>
     (function() {
-        // --- ⚙️ 설정 구역 ---
         const firebaseConfig = {
-	apiKey: "AIzaSyBF9sb_UYjPt6J_O7g6p4FkLSbggUC6cfM",
-	authDomain: "gumurings-slot-game.firebaseapp.com",
-	projectId: "gumurings-slot-game",
-	storageBucket: "gumurings-slot-game.firebasestorage.app",
-	messagingSenderId: "1006027725856",
-	appId: "1:1006027725856:web:b7e5d7b55eac14dc377045"
-	};
-        const ADMIN_ID = "gumuring"; // 👈 치트 권한을 가질 [게임 아이디]를 적으세요
-        // ------------------
+		apiKey: "AIzaSyBF9sb_UYjPt6J_O7g6p4FkLSbggUC6cfM",
+		authDomain: "gumurings-slot-game.firebaseapp.com",
+		projectId: "gumurings-slot-game",
+		storageBucket: "gumurings-slot-game.firebasestorage.app",
+		messagingSenderId: "1006027725856",
+		appId: "1:1006027725856:web:b7e5d7b55eac14dc377045"
+		};
+        const ADMIN_ID = "gumuring"; // 👈 본인의 어드민 아이디
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -146,67 +139,53 @@
         let currentBet = 0;
         let grindCount = 0;
         let myUID = "";
+        let userData = null;
 
-        const multipliers = { '💎': 10, '💲': 7, '💰': 5, '🍀': 3, '☢️': 1.1, '💣': 0 };
-        const probabilities = { '💎': 5, '💲': 10, '💰': 13, '🍀': 17, '☢️': 25, '💣': 30 };
+        const multipliers = { '💎': 10, '💰': 5, '🍀': 3, '💣': 0 };
+        const probabilities = { '💎': 5, '💰': 15, '🍀': 30, '💣': 50 };
         const symbols = Object.keys(probabilities);
 
+        // 오전 7시 기준 날짜 계산
+        function getGameDate() {
+            const now = new Date();
+            if (now.getHours() < 7) now.setDate(now.getDate() - 1);
+            return now.toISOString().split('T')[0];
+        }
+
         window.game = {
-            isLocalAction: false, // 내가 직접 게임해서 돈을 번 건지, 남이 준 건지 구분하는 용도
+            isLocalAction: false,
             unsubscribe: null,
 
             loginIdPw: async function() {
                 const id = document.getElementById('login-id').value;
                 const pw = document.getElementById('login-pw').value;
-                if(!id || !pw) return alert("아이디와 비밀번호를 입력하세요.");
-
                 const snapshot = await db.collection("users").where("gameId", "==", id).where("gamePw", "==", pw).get();
-                if(snapshot.empty) return alert("아이디나 비밀번호가 틀렸습니다.");
-
-                const doc = snapshot.docs[0];
-                if(doc.data().banned) return alert("관리자에 의해 접속이 차단된 계정입니다.");
-
-                myUID = doc.id;
-                balance = doc.data().balance;
+                if(snapshot.empty) return alert("아이디/비번이 틀렸습니다.");
+                myUID = snapshot.docs[0].id;
                 window.myGameId = id;
                 this.start(id);
             },
 
             registerGoogle: async function() {
-                try {
-                    const provider = new firebase.auth.GoogleAuthProvider();
-                    const res = await auth.signInWithPopup(provider);
-                    myUID = res.user.uid;
-                    
-                    const doc = await db.collection("users").doc(myUID).get();
-                    if (doc.exists) {
-                        alert("이미 가입된 구글 계정입니다. 만드신 아이디로 로그인해주세요.");
-                        auth.signOut();
-                    } else {
-                        document.getElementById('step-login').style.display = 'none';
-                        document.getElementById('step-register').style.display = 'block';
-                    }
-                } catch (error) { console.error(error); }
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const res = await auth.signInWithPopup(provider);
+                myUID = res.user.uid;
+                const doc = await db.collection("users").doc(myUID).get();
+                if (doc.exists) {
+                    alert("가입된 계정입니다. 아이디로 로그인하세요.");
+                    auth.signOut();
+                } else {
+                    document.getElementById('step-login').style.display = 'none';
+                    document.getElementById('step-register').style.display = 'block';
+                }
             },
 
             completeReg: async function() {
                 const id = document.getElementById('reg-id').value;
                 const pw = document.getElementById('reg-pw').value;
-                if(!id || !pw) return alert("아이디와 비밀번호를 모두 입력하세요.");
-
-                const idCheck = await db.collection("users").where("gameId", "==", id).get();
-                if(!idCheck.empty) return alert("이미 존재하는 아이디입니다. 다른 아이디를 입력하세요.");
-
-                await db.collection("users").doc(myUID).set({ 
-                    gameId: id, gamePw: pw, balance: 1000, email: auth.currentUser.email, banned: false 
-                });
-                balance = 1000; window.myGameId = id; this.start(id);
-            },
-
-            logout: function() {
-                if(this.unsubscribe) this.unsubscribe(); // 로그아웃 시 감시 종료
-                auth.signOut();
-                location.reload(); 
+                await db.collection("users").doc(myUID).set({ gameId: id, gamePw: pw, balance: 1000, banned: false });
+                window.myGameId = id;
+                this.start(id);
             },
 
             start: function(id) {
@@ -214,186 +193,139 @@
                 document.getElementById('game-ui').style.display = 'block';
                 document.getElementById('display-id').innerText = id;
                 
-                // 📡 [핵심] 실시간 데이터베이스 감지 시스템 작동!
                 if(this.unsubscribe) this.unsubscribe();
                 this.unsubscribe = db.collection("users").doc(myUID).onSnapshot((doc) => {
-                    if (doc.exists) {
-                        let data = doc.data();
-
-                        // 1. 실시간 밴(강퇴) 기능
-                        if (data.banned) {
-                            alert("🚨 관리자에 의해 실시간으로 접속이 차단되었습니다.");
-                            this.logout();
-                            return;
-                        }
-
-                        // 2. 어드민이 실시간으로 돈을 쏴줬을 때 메시지 출력!
-                        if (data.balance > balance && !this.isLocalAction) {
-                            let diff = data.balance - balance;
-                            this.showMessage(`🎁 어드민님이 ${diff.toLocaleString()}코인을 기부하셨습니다!`, "#00ffff");
-                            
-                            // 돈 들어올 때 애니메이션 효과
-                            const moneyInfo = document.querySelector('.money-info');
-                            moneyInfo.style.color = "#00ffff";
-                            moneyInfo.style.transform = "scale(1.2)";
-                            setTimeout(() => {
-                                moneyInfo.style.color = "#ffd700";
-                                moneyInfo.style.transform = "scale(1)";
-                            }, 500);
-                        }
-
-                        // 3. 소지금 동기화
-                        balance = data.balance;
-                        this.updateUI();
+                    if (!doc.exists) return;
+                    userData = doc.data();
+                    if (userData.banned) { alert("🚨 차단됨"); location.reload(); }
+                    
+                    // 어드민 기부 감지
+                    if (userData.balance > balance && !this.isLocalAction) {
+                        this.showMessage(`🎁 어드민이 ${(userData.balance - balance).toLocaleString()}코인을 쐈습니다!`, "#00ffff");
                     }
+                    balance = userData.balance;
+                    this.updateUI();
                 });
-
-                this.updateUI();
-                if(id === ADMIN_ID) this.showMessage("👑 관리자님 환영합니다! (` 키로 콘솔 열기)", "#00ffff");
             },
-            
+
             updateUI: function() {
                 document.getElementById('balance').innerText = Math.floor(balance).toLocaleString();
                 document.getElementById('current-bet').innerText = currentBet.toLocaleString();
                 document.getElementById('grind-count').innerText = grindCount;
             },
-            
-            addBet: function(amount) { currentBet += amount; this.updateUI(); },
-            resetBet: function() { currentBet = 0; this.updateUI(); },
-            
+
+            openAttendance: function() {
+                document.getElementById('attendance-overlay').style.display = 'flex';
+                const today = getGameDate();
+                const last = userData.lastAttendance || "";
+                const streak = userData.streak || 0;
+                document.getElementById('att-streak').innerText = `${streak}일 연속 출석 중!`;
+                if (last === today) {
+                    document.getElementById('att-status').innerText = "오늘 출석 완료!";
+                    document.getElementById('do-att-btn').style.display = 'none';
+                } else {
+                    document.getElementById('att-status').innerText = "보상을 받으세요!";
+                    document.getElementById('do-att-btn').style.display = 'block';
+                }
+            },
+
+            doAttendance: async function() {
+                const today = getGameDate();
+                const last = userData.lastAttendance || "";
+                let streak = userData.streak || 0;
+
+                // 어제 날짜 구하기 (연속 체크)
+                const yesterday = new Date();
+                yesterday.setHours(yesterday.getHours() < 7 ? yesterday.getHours() - 24 : yesterday.getHours());
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+                streak = (last === yesterdayStr) ? streak + 1 : 1;
+                const reward = Math.floor(1000 * (streak / 10 + 0.9));
+
+                this.isLocalAction = true;
+                await db.collection("users").doc(myUID).update({
+                    balance: firebase.firestore.FieldValue.increment(reward),
+                    lastAttendance: today, streak: streak
+                });
+                document.getElementById('attendance-overlay').style.display = 'none';
+                this.showMessage(`🎁 출석 완료! ${reward}코인 획득!`, "#2ecc71");
+                setTimeout(() => this.isLocalAction = false, 1000);
+            },
+
             grind: async function() {
                 grindCount++;
                 if (grindCount >= 10) {
                     grindCount = 0;
-                    this.showMessage("✨ 1원 채굴 완료!", "#2ecc71");
-                    
-                    this.isLocalAction = true; // 내가 직접 번 돈이라고 표시
+                    this.isLocalAction = true;
                     await db.collection("users").doc(myUID).update({ balance: firebase.firestore.FieldValue.increment(1) });
-                    setTimeout(() => { this.isLocalAction = false; }, 1000);
+                    this.showMessage("✨ 1원 채굴 성공!", "#2ecc71");
+                    setTimeout(() => this.isLocalAction = false, 1000);
                 }
                 this.updateUI();
             },
-            
+
+            addBet: function(n) { currentBet += n; this.updateUI(); },
+            resetBet: function() { currentBet = 0; this.updateUI(); },
+
             spin: async function() {
-                if (currentBet <= 0) return this.showMessage("⚠️ 베팅금을 설정하세요!", "#ff4757");
-                if (currentBet > balance) return this.showMessage("⚠️ 소지금이 부족합니다!", "#ff4757");
+                if(balance < currentBet || currentBet <= 0) return this.showMessage("코인이 부족합니다!", "#ff4757");
 
-                // 일단 화면에서만 차감
-                balance -= currentBet;
-                this.updateUI();
-
-                let result = [this.getRandomSymbol(), this.getRandomSymbol(), this.getRandomSymbol()];
-                const slots = [document.getElementById('slot1'), document.getElementById('slot2'), document.getElementById('slot3')];
-                slots.forEach(s => s.innerText = '🌀');
+                balance -= currentBet; this.updateUI();
                 
-                setTimeout(async () => {
-                    slots[0].innerText = result[0]; slots[1].innerText = result[1]; slots[2].innerText = result[2];
+                const res = [this.getRandomSymbol(), this.getRandomSymbol(), this.getRandomSymbol()];
+                document.getElementById('slot1').innerText = res[0];
+                document.getElementById('slot2').innerText = res[1];
+                document.getElementById('slot3').innerText = res[2];
 
-                    let counts = {};
-                    result.forEach(s => counts[s] = (counts[s] || 0) + 1);
-                    let won = false; let winSymbol = null;
-                    for (let s in counts) { if (counts[s] >= 2) { won = true; winSymbol = s; break; } }
+                let counts = {}; res.forEach(s => counts[s] = (counts[s] || 0) + 1);
+                let winS = null; let mCount = 0;
+                for(let s in counts) { if(counts[s] >= 2) { winS = s; mCount = counts[s]; break; } }
 
-                    let netChange = -currentBet; // 기본적으로 잃은 상태
-
-                    if (won) {
-                        let m = multipliers[winSymbol]; 
-                        let prize = currentBet * m; 
-                        netChange = prize - currentBet; // 순수익 계산
-
-                        if(m > 0) {
-                            this.showMessage(`🎉 잭팟! [${winSymbol}] ${m}배! ${Math.floor(prize).toLocaleString()}원 획득! 🎉`, "#00ffff");
-                        } else {
-                            this.showMessage(`[${winSymbol}] 꽝입니다... (0배)`, "#ff4757");
-                        }
+                let prize = 0;
+                if(winS) {
+                    prize = currentBet * multipliers[winS];
+                    if(mCount === 3) {
+                        prize *= 2;
+                        this.showMessage(`🔥 3개 일치! 2배 잭팟! ${prize.toLocaleString()}원!`, "#00ffff");
                     } else {
-                        this.showMessage("아쉽네요! 다시 도전하세요!", "#bdc3c7");
+                        this.showMessage(`🎉 당첨! ${prize.toLocaleString()}원!`, "#ffd700");
                     }
+                } else { this.showMessage("꽝!", "#888"); }
 
-                    // 내가 직접 번/잃은 돈이므로 알림 안 뜨게 처리
-                    this.isLocalAction = true; 
-                    await db.collection("users").doc(myUID).update({ balance: firebase.firestore.FieldValue.increment(netChange) });
-                    setTimeout(() => { this.isLocalAction = false; }, 1000);
-
-                }, 500); 
+                this.isLocalAction = true;
+                await db.collection("users").doc(myUID).update({ balance: firebase.firestore.FieldValue.increment(prize - currentBet) });
+                setTimeout(() => this.isLocalAction = false, 1000);
             },
-            
+
             getRandomSymbol: function() {
-                let rand = Math.random() * 100; let sum = 0;
-                for (let symbol in probabilities) {
-                    sum += probabilities[symbol];
-                    if (rand < sum) return symbol;
-                }
+                let r = Math.random() * 100; let s = 0;
+                for(let k in probabilities) { s += probabilities[k]; if(r < s) return k; }
             },
-            
-            showMessage: function(text, color) {
+
+            showMessage: function(t, c) {
                 const m = document.getElementById('message');
-                m.innerText = text; m.style.color = color;
-                m.style.textShadow = `0 0 10px ${color}`;
+                m.innerText = t; m.style.color = c;
             }
         };
 
-        const consoleEl = document.getElementById('console');
-        const consoleInput = document.getElementById('console-input');
-
+        // 콘솔 및 키 이벤트
         document.addEventListener('keydown', (e) => {
-            if (e.key === '`') {
-                e.preventDefault();
-                if (window.myGameId !== ADMIN_ID) return; 
-
-                if (consoleEl.style.display === 'block') {
-                    consoleEl.style.display = 'none'; consoleInput.blur();
-                } else {
-                    consoleEl.style.display = 'block'; consoleInput.focus();
-                }
+            if (e.key === '`' && window.myGameId === ADMIN_ID) {
+                const c = document.getElementById('console');
+                c.style.display = c.style.display === 'block' ? 'none' : 'block';
+                if(c.style.display === 'block') document.getElementById('console-input').focus();
             }
         });
 
-        consoleInput.addEventListener('keydown', async (e) => {
+        document.getElementById('console-input').addEventListener('keydown', async (e) => {
             if (e.key === 'Enter') {
-                let parts = consoleInput.value.trim().split(' ');
-                consoleInput.value = '';
-                consoleEl.style.display = 'none';
-
-                if (parts[0] === '/set' && parts[1] === 'me' && parts[2] === 'coin') {
-                    let val = parseInt(parts[3]);
-                    if (!isNaN(val)) {
-                        window.game.isLocalAction = true;
-                        await db.collection("users").doc(myUID).update({ balance: val });
-                        setTimeout(() => { window.game.isLocalAction = false; }, 1000);
-                        window.game.showMessage(`[SYSTEM] 소지금을 ${val.toLocaleString()}원으로 변경`, "#ff00de");
-                    }
+                const val = e.target.value.split(' '); e.target.value = '';
+                document.getElementById('console').style.display = 'none';
+                if (val[0] === '/give' && val[2] === 'coin') {
+                    const snap = await db.collection("users").where("gameId", "==", val[1]).get();
+                    if(!snap.empty) snap.docs[0].ref.update({ balance: firebase.firestore.FieldValue.increment(parseInt(val[3])) });
                 }
-                else if (parts[0] === '/give' && parts[2] === 'coin' && parts.length === 4) {
-                    let targetId = parts[1]; let amount = parseInt(parts[3]);
-                    if (!isNaN(amount)) {
-                        const targetUser = await db.collection("users").where("gameId", "==", targetId).get();
-                        if(targetUser.empty) {
-                            window.game.showMessage(`[ERROR] '${targetId}' 유저 없음`, "#ff4757");
-                        } else {
-                            const targetDoc = targetUser.docs[0];
-                            await targetDoc.ref.update({ balance: firebase.firestore.FieldValue.increment(amount) });
-                            
-                            // 본인한테 쐈을 때도 메시지 출력되도록 분기 처리
-                            if(targetId === window.myGameId) { 
-                                // 본인에게 쏜 거면 onSnapshot이 알아서 올려주므로 로컬 업데이트 불필요
-                            }
-                            window.game.showMessage(`[SYSTEM] '${targetId}'에게 코인 ${amount.toLocaleString()} 지급 완료`, "#00ffff");
-                        }
-                    }
-                }
-                else if (parts[0] === '/ban' && parts.length === 2) {
-                    let targetId = parts[1];
-                    const targetUser = await db.collection("users").where("gameId", "==", targetId).get();
-                    if(targetUser.empty) {
-                        window.game.showMessage(`[ERROR] '${targetId}' 유저 없음`, "#ff4757");
-                    } else {
-                        const targetDoc = targetUser.docs[0];
-                        await targetDoc.ref.update({ banned: true });
-                        window.game.showMessage(`[SYSTEM] '${targetId}' 영구 차단 완료. (실시간 추방됨)`, "#ff4757");
-                    }
-                }
-                else { window.game.showMessage("알 수 없는 명령어입니다.", "#ff4757"); }
             }
         });
     })();
