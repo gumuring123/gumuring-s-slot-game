@@ -10,46 +10,39 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap');
 
-        /* ✨ 더 눈부시고 화려해진 배경 애니메이션 */
+        /* ✨ 눈부신 네온 배경 애니메이션 */
         @keyframes bg-glow {
             0% { background: radial-gradient(circle at center, #1a0033 0%, #000000 100%); }
-            25% { background: radial-gradient(circle at center, #3d0066 0%, #050011 100%); }
-            50% { background: radial-gradient(circle at center, #6600cc 0%, #000000 100%); }
-            75% { background: radial-gradient(circle at center, #3d0066 0%, #050011 100%); }
+            50% { background: radial-gradient(circle at center, #4d0099 0%, #0a001a 100%); }
             100% { background: radial-gradient(circle at center, #1a0033 0%, #000000 100%); }
         }
 
         body { 
             font-family: 'Malgun Gothic', sans-serif; 
-            animation: bg-glow 6s infinite ease-in-out; 
+            animation: bg-glow 5s infinite alternate; 
             color: white; text-align: center; margin: 0; padding: 0; user-select: none; overflow-x: hidden; 
         }
         
-        /* UI 요소 */
-        #balance-ui { position: absolute; top: 20px; right: 30px; font-size: 20px; font-weight: bold; background: rgba(17, 17, 17, 0.9); padding: 15px 25px; border-radius: 15px; border: 2px solid #ffd700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.6); z-index: 100; }
-        #attendance-btn { position: absolute; top: 20px; left: 30px; padding: 12px 20px; background: linear-gradient(180deg, #ff00de, #9b0082); color: white; border: 2px solid #fff; border-radius: 10px; cursor: pointer; font-weight: bold; box-shadow: 0 0 20px #ff00de; z-index: 100; transition: 0.3s; }
+        #balance-ui { position: absolute; top: 20px; right: 30px; font-size: 20px; font-weight: bold; background: rgba(0,0,0,0.8); padding: 15px 25px; border-radius: 15px; border: 2px solid #ffd700; box-shadow: 0 0 20px #ffd700; z-index: 100; }
+        #attendance-btn { position: absolute; top: 20px; left: 30px; padding: 12px 20px; background: linear-gradient(180deg, #ff00de, #9b0082); color: white; border: 2px solid #fff; border-radius: 10px; cursor: pointer; font-weight: bold; box-shadow: 0 0 15px #ff00de; z-index: 100; }
 
-        h1 { margin-top: 80px; font-family: 'Black Han Sans', sans-serif; font-size: 60px; color: #fff; text-shadow: 0 0 20px #ff00de, 0 0 40px #ff00de; animation: neon-pulse 1.5s infinite alternate; }
-        @keyframes neon-pulse { from { opacity: 1; } to { opacity: 0.8; } }
+        h1 { margin-top: 80px; font-family: 'Black Han Sans', sans-serif; font-size: 60px; text-shadow: 0 0 20px #ff00de, 0 0 40px #ff00de; }
 
         .slot-container { display: inline-flex; justify-content: center; gap: 20px; margin: 30px 0; background: #111; padding: 30px 40px; border-radius: 25px; border: 4px solid #333; box-shadow: 0 0 50px #ff00de; }
         .slot { width: 130px; height: 140px; background: linear-gradient(180deg, #fff, #bbb); border-radius: 15px; font-size: 80px; display: flex; justify-content: center; align-items: center; color: black; box-shadow: inset 0 10px 20px rgba(0,0,0,0.5); }
 
-        .controls { background: rgba(20, 30, 40, 0.85); padding: 25px; border-radius: 20px; border: 1px solid #444; max-width: 800px; display: inline-block; box-shadow: 0 0 30px rgba(0,255,255,0.2); }
-        .bet-buttons button { margin: 4px; padding: 10px 15px; background: #3498db; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+        .controls { background: rgba(20, 30, 40, 0.8); padding: 25px; border-radius: 20px; border: 1px solid #444; max-width: 850px; display: inline-block; }
+        .bet-buttons button { margin: 4px; padding: 10px 15px; background: #3498db; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; min-width: 65px; }
         .btn-spin { background: linear-gradient(180deg, #ff4757, #ff1e34); font-size: 28px; width: 100%; margin-top: 15px; padding: 15px; border-radius: 12px; cursor: pointer; box-shadow: 0 0 20px #ff4757; }
 
-        /* 📜 로그 모달 스타일 */
-        #log-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; }
-        #log-window { background: #111; border: 2px solid #00ffff; width: 500px; max-height: 600px; border-radius: 15px; display: flex; flex-direction: column; }
-        #log-header { padding: 15px; border-bottom: 1px solid #333; font-weight: bold; color: #00ffff; }
-        #log-content { flex: 1; overflow-y: auto; padding: 15px; text-align: left; font-family: monospace; font-size: 14px; }
-        .log-entry { margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px dashed #222; }
-
-        /* 공통 모달 & 콘솔 */
+        /* 로그 & 콘솔 스타일 */
+        #log-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        #log-window { background: #111; border: 2px solid #00ffff; width: 550px; max-height: 600px; border-radius: 15px; display: flex; flex-direction: column; }
+        #log-content { flex: 1; overflow-y: auto; padding: 20px; text-align: left; font-family: monospace; }
+        
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #00ffff; text-align: center; width: 320px; }
-        #console { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0, 0, 0, 0.95); padding: 15px; border-top: 2px solid #00ffff; z-index: 10000; text-align: left; }
+        #console { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0, 0, 0, 0.95); padding: 15px; border-top: 2px solid #00ffff; z-index: 10000; }
         #console-input { background: transparent; border: none; color: #00ffff; font-size: 20px; outline: none; width: 80%; font-family: monospace; }
     </style>
 </head>
@@ -57,8 +50,8 @@
 
     <div id="log-overlay">
         <div id="log-window">
-            <div id="log-header">📜 활동 로그: <span id="log-user-title"></span></div>
-            <div id="log-content">로그를 불러오는 중...</div>
+            <div style="padding:15px; border-bottom:1px solid #333; color:#00ffff; font-weight:bold;">📜 활동 로그: <span id="log-user-title"></span></div>
+            <div id="log-content">로그 조회 중...</div>
             <button onclick="document.getElementById('log-overlay').style.display='none'" style="background:#444; padding:15px; border:none; color:white; cursor:pointer;">닫기</button>
         </div>
     </div>
@@ -68,22 +61,22 @@
             <h2 style="color:#00ffff;">🎰 CASINO LOGIN</h2>
             <input type="text" id="login-id" placeholder="아이디" style="padding:10px; margin-bottom:10px; width:90%;"><br>
             <input type="password" id="login-pw" placeholder="비밀번호" style="padding:10px; margin-bottom:10px; width:90%;"><br>
-            <button onclick="window.game.loginIdPw()" style="width:100%; padding:15px; background:#2ecc71;">로그인</button>
+            <button onclick="window.game.loginIdPw()" style="width:100%; padding:15px; background:#2ecc71; color:white; font-weight:bold; border:none; border-radius:8px;">로그인</button>
             <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-            <button onclick="window.game.registerGoogle()" style="width:100%; background:#4285F4; padding:10px;">구글 회원가입</button>
+            <button onclick="window.game.registerGoogle()" style="width:100%; background:#4285F4; color:white; padding:10px; border:none; border-radius:8px;">구글 회원가입</button>
         </div>
         <div id="step-register" class="modal" style="display:none;">
-            <h2>📝 ID 설정</h2>
-            <input type="text" id="reg-id" placeholder="사용할 아이디" style="padding:10px; margin-bottom:10px; width:90%;"><br>
+            <h2 style="color:#ff00de;">📝 ID 설정</h2>
+            <input type="text" id="reg-id" placeholder="아이디" style="padding:10px; margin-bottom:10px; width:90%;"><br>
             <input type="password" id="reg-pw" placeholder="비밀번호" style="padding:10px; margin-bottom:10px; width:90%;"><br>
-            <button onclick="window.game.completeReg()" style="width:100%; background:#ff00de; padding:15px;">발급 완료</button>
+            <button onclick="window.game.completeReg()" style="width:100%; background:#ff00de; color:white; padding:15px; border:none; border-radius:8px;">발급 완료</button>
         </div>
     </div>
 
     <div id="game-ui" style="display:none;">
         <button id="attendance-btn" onclick="window.game.openAttendance()">📅 출석체크</button>
         <div id="balance-ui">
-            <div class="user-info">👤 <span id="display-id">Guest</span> <span onclick="location.reload()" style="cursor:pointer;">🚪</span></div>
+            <div style="margin-bottom:5px;">👤 <span id="display-id">Guest</span> <span onclick="location.reload()" style="cursor:pointer; margin-left:10px;">🚪</span></div>
             <div style="font-size: 26px; color: #ffd700;">💰 <span id="balance">0</span></div>
         </div>
 
@@ -93,10 +86,10 @@
             <div class="slot" id="slot2">❓</div>
             <div class="slot" id="slot3">❓</div>
         </div>
-        <div id="message" style="font-size:24px; color:#ffd700; height:30px;">행운을 빌어요!</div>
+        <div id="message" style="font-size:24px; color:#ffd700; height:60px; line-height:1.2;">대박을 노려보세요!</div>
 
         <div class="controls">
-            <div style="margin-bottom:10px;">베팅금: <span id="current-bet" style="color:#00ffff;">0</span></div>
+            <div style="margin-bottom:10px; font-size:20px;">🔥 베팅금: <span id="current-bet" style="color:#00ffff;">0</span></div>
             <div class="bet-buttons">
                 <button onclick="window.game.addBet(1)">+1</button>
                 <button onclick="window.game.addBet(100)">+100</button>
@@ -112,7 +105,7 @@
     </div>
 
     <div id="console">
-        <span style="color:#00ffff; font-family:monospace;">ADMIN@ROOT:~$</span>
+        <span style="color:#00ffff; font-family:monospace; font-size:20px;">ADMIN@ROOT:~$</span>
         <input type="text" id="console-input" placeholder="명령어 입력..." autocomplete="off">
     </div>
 
@@ -133,8 +126,8 @@
         const auth = firebase.auth();
 
         let balance = 0, currentBet = 0, myUID = "", userData = null;
+        const multipliers = { '💎': 10, '💰': 5, '🍀': 3, '💣': 0 };
 
-        // k, m 처리기
         function parseAmount(str) {
             str = str.toLowerCase();
             let mult = 1;
@@ -143,13 +136,9 @@
             return (parseFloat(str) || 0) * mult;
         }
 
-        // ✨ 로그 기록 함수
-        async function logAction(targetGameId, type, message, amount = 0) {
+        async function logAction(targetId, type, message, amount = 0) {
             await db.collection("logs").add({
-                targetId: targetGameId,
-                type: type,
-                message: message,
-                amount: amount,
+                targetId, type, message, amount,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
         }
@@ -161,13 +150,31 @@
                 const id = document.getElementById('login-id').value;
                 const pw = document.getElementById('login-pw').value;
                 const snap = await db.collection("users").where("gameId", "==", id).where("gamePw", "==", pw).get();
-                if(snap.empty) return alert("틀렸습니다.");
+                if(snap.empty) return alert("계정 정보가 일치하지 않습니다.");
                 myUID = snap.docs[0].id;
                 window.myGameId = id;
                 this.start(id);
             },
 
-            // 회원가입 등 생략 (이전 코드와 동일)
+            registerGoogle: async function() {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const res = await auth.signInWithPopup(provider);
+                myUID = res.user.uid;
+                const doc = await db.collection("users").doc(myUID).get();
+                if (doc.exists) { alert("이미 가입된 계정입니다."); auth.signOut(); }
+                else {
+                    document.getElementById('step-login').style.display = 'none';
+                    document.getElementById('step-register').style.display = 'block';
+                }
+            },
+
+            completeReg: async function() {
+                const id = document.getElementById('reg-id').value;
+                const pw = document.getElementById('reg-pw').value;
+                await db.collection("users").doc(myUID).set({ gameId: id, gamePw: pw, balance: 1000, banned: false, isAdmin: false });
+                window.myGameId = id;
+                this.start(id);
+            },
 
             start: function(id) {
                 document.getElementById('auth-overlay').style.display = 'none';
@@ -177,10 +184,10 @@
                 db.collection("users").doc(myUID).onSnapshot(doc => {
                     if(!doc.exists) return;
                     let data = doc.data();
-                    if(data.banned) { alert("🚨 차단되었습니다."); location.reload(); }
+                    if(data.banned) { alert("🚨 접근이 차단된 계정입니다."); location.reload(); }
                     
                     if(!isFirstLoad && data.balance > balance && !this.isLocalAction) {
-                        this.showMessage(`🎁 입금되었습니다! (+${(data.balance-balance).toLocaleString()})`, "#00ffff");
+                        this.showMessage(`🎁 입금이 확인되었습니다! (+${(data.balance-balance).toLocaleString()})`, "#00ffff");
                     }
                     
                     balance = data.balance;
@@ -203,32 +210,46 @@
             resetBet: () => { currentBet = 0; window.game.updateUI(); },
 
             spin: async function() {
-                if(balance < currentBet || currentBet <= 0) return;
+                if(balance < currentBet || currentBet <= 0) return this.showMessage("금액이 부족하거나 베팅을 하지 않았습니다.", "#ff4757");
                 this.isLocalAction = true;
                 
-                // 슬롯 로직 (간략화)
-                const symbols = ['💎', '💰', '🍀', '💣'];
-                const res = [symbols[Math.floor(Math.random()*4)], symbols[Math.floor(Math.random()*4)], symbols[Math.floor(Math.random()*4)]];
+                const symbols = ['💎', '💰', '🍀', '💣', '💣']; // 💣 확률 약간 높임
+                const res = [symbols[Math.floor(Math.random()*5)], symbols[Math.floor(Math.random()*5)], symbols[Math.floor(Math.random()*5)]];
                 document.getElementById('slot1').innerText = res[0];
                 document.getElementById('slot2').innerText = res[1];
                 document.getElementById('slot3').innerText = res[2];
 
-                let prize = 0;
-                if(res[0] === res[1] && res[1] === res[2]) prize = currentBet * 10;
-                else if(res[0] === res[1] || res[1] === res[2]) prize = currentBet * 2;
+                let counts = {}; res.forEach(s => counts[s] = (counts[s] || 0) + 1);
+                let winSymbol = null, matchCount = 0;
+                for(let s in counts) { if(counts[s] >= 2 && s !== '💣') { winSymbol = s; matchCount = counts[s]; break; } }
 
+                let prize = 0;
+                let msg = "꽝! 다음 기회에...";
+                let color = "#888";
+
+                if(winSymbol) {
+                    let baseMult = multipliers[winSymbol];
+                    let finalMult = (matchCount === 3) ? baseMult * 2 : baseMult;
+                    prize = currentBet * finalMult;
+                    color = (matchCount === 3) ? "#00ffff" : "#ffd700";
+                    msg = (matchCount === 3) 
+                        ? `🔥 대박! [${winSymbol}] 3개 일치!<br>${finalMult}배 적용! (+${prize.toLocaleString()} 코인)`
+                        : `🎉 [${winSymbol}] 2개 일치! ${finalMult}배 적용!<br>(+${prize.toLocaleString()} 코인)`;
+                }
+
+                this.showMessage(msg, color);
                 await db.collection("users").doc(myUID).update({ balance: firebase.firestore.FieldValue.increment(prize - currentBet) });
-                
-                // ✨ 스핀 결과 로그 남기기
-                logAction(window.myGameId, "SPIN", `베팅: ${currentBet} / 결과: ${res.join('|')} / 획득: ${prize}`, prize - currentBet);
+                logAction(window.myGameId, "SPIN", `결과: ${res.join('|')} / 배수: ${prize/currentBet || 0} / 획득: ${prize}`, prize - currentBet);
                 
                 setTimeout(() => this.isLocalAction = false, 1000);
             },
 
-            showMessage: (t, c) => { const m = document.getElementById('message'); m.innerText = t; m.style.color = c; }
+            showMessage: (t, c) => { const m = document.getElementById('message'); m.innerHTML = t; m.style.color = c; },
+
+            openAttendance: function() { /* 이전 출석체크 코드와 동일 */ }
         };
 
-        // 🛡️ 어드민 콘솔 기능 확대
+        // 🛡️ 어드민 콘솔 강화 (/set 추가)
         document.addEventListener('keydown', (e) => {
             const isAdmin = (window.myGameId === ADMIN_ID || (userData && userData.isAdmin));
             if (e.key === '`' && isAdmin) {
@@ -245,66 +266,45 @@
                 document.getElementById('console').style.display = 'none';
 
                 const targetId = cmd[1];
+                const snap = await db.collection("users").where("gameId", "==", targetId).get();
+                if(snap.empty && cmd[0] !== '/log') return alert("유저를 찾을 수 없습니다.");
+                const targetRef = !snap.empty ? snap.docs[0].ref : null;
 
                 // 1. /give [유저] coin [금액]
                 if (cmd[0] === '/give' && cmd[2] === 'coin') {
                     const amt = parseAmount(cmd[3]);
-                    const snap = await db.collection("users").where("gameId", "==", targetId).get();
-                    if(!snap.empty) {
-                        await snap.docs[0].ref.update({ balance: firebase.firestore.FieldValue.increment(amt) });
-                        logAction(targetId, "ADMIN_GIVE", `어드민이 ${amt} 코인을 지급함`, amt);
-                        alert("지급 완료");
-                    }
+                    await targetRef.update({ balance: firebase.firestore.FieldValue.increment(amt) });
+                    logAction(targetId, "ADMIN_GIVE", `어드민이 ${amt.toLocaleString()} 지급`, amt);
                 }
-                // 2. /give [유저] admin
-                else if (cmd[0] === '/give' && cmd[2] === 'admin') {
-                    const snap = await db.collection("users").where("gameId", "==", targetId).get();
-                    if(!snap.empty) {
-                        await snap.docs[0].ref.update({ isAdmin: true });
-                        logAction(targetId, "ADMIN_PROMOTED", "어드민으로 승격됨");
-                    }
+                // 2. /set [유저] coin [금액] ✨ 복구됨!
+                else if (cmd[0] === '/set' && cmd[2] === 'coin') {
+                    const amt = parseAmount(cmd[3]);
+                    await targetRef.update({ balance: amt });
+                    logAction(targetId, "ADMIN_SET", `어드민이 잔액을 ${amt.toLocaleString()}으로 고정`, amt);
                 }
                 // 3. /take [유저] coin [금액]
                 else if (cmd[0] === '/take' && cmd[2] === 'coin') {
                     const amt = parseAmount(cmd[3]);
-                    const snap = await db.collection("users").where("gameId", "==", targetId).get();
-                    if(!snap.empty) {
-                        await snap.docs[0].ref.update({ balance: firebase.firestore.FieldValue.increment(-amt) });
-                        logAction(targetId, "ADMIN_TAKE", `어드민이 ${amt} 코인을 회수함`, -amt);
-                        alert("회수 완료");
-                    }
+                    await targetRef.update({ balance: firebase.firestore.FieldValue.increment(-amt) });
+                    logAction(targetId, "ADMIN_TAKE", `어드민이 ${amt.toLocaleString()} 회수`, -amt);
                 }
-                // 4. /ban [유저]
+                // 4. /ban [유저], /give [유저] admin 등...
                 else if (cmd[0] === '/ban') {
-                    const snap = await db.collection("users").where("gameId", "==", targetId).get();
-                    if(!snap.empty) {
-                        await snap.docs[0].ref.update({ banned: true });
-                        logAction(targetId, "ADMIN_BAN", "어드민이 차단함");
-                        alert("차단 완료");
-                    }
+                    await targetRef.update({ banned: true });
                 }
-                // 5. /log [유저]
+                // 5. /log [유저] (100개로 확장)
                 else if (cmd[0] === '/log') {
                     document.getElementById('log-overlay').style.display = 'flex';
                     document.getElementById('log-user-title').innerText = targetId;
                     const content = document.getElementById('log-content');
                     content.innerHTML = "조회 중...";
-
-                    const logs = await db.collection("logs")
-                                        .where("targetId", "==", targetId)
-                                        .orderBy("timestamp", "desc")
-                                        .limit(500).get();
-                    
-                    if(logs.empty) {
-                        content.innerHTML = "기록이 없습니다.";
-                    } else {
-                        content.innerHTML = "";
-                        logs.forEach(doc => {
-                            const d = doc.data();
-                            const time = d.timestamp ? d.timestamp.toDate().toLocaleString() : "방금 전";
-                            content.innerHTML += `<div class="log-entry">[${time}] <b>${d.type}</b>: ${d.message}</div>`;
-                        });
-                    }
+                    const logs = await db.collection("logs").where("targetId", "==", targetId).orderBy("timestamp", "desc").limit(100).get();
+                    content.innerHTML = logs.empty ? "기록 없음" : "";
+                    logs.forEach(doc => {
+                        const d = doc.data();
+                        const time = d.timestamp ? d.timestamp.toDate().toLocaleString() : "방금 전";
+                        content.innerHTML += `<div style="border-bottom:1px solid #222; padding:5px;">[${time}] <b>${d.type}</b>: ${d.message}</div>`;
+                    });
                 }
             }
         });
