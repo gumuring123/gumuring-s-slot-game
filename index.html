@@ -14,7 +14,6 @@
         @keyframes bg-glow { 0% { background: #1a0033; } 50% { background: #0a001a; } 100% { background: #1a0033; } }
         body { font-family: 'Malgun Gothic', sans-serif; animation: bg-glow 5s infinite alternate; color: white; text-align: center; margin: 0; padding: 0; user-select: none; overflow-x: hidden; }
         
-        /* 상단 UI 버튼 */
         #top-bar { position: absolute; top: 10px; left: 10px; display: flex; flex-wrap: wrap; gap: 8px; z-index: 100; max-width: 60%; }
         .ui-btn { padding: 10px 14px; border: 2px solid #fff; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 14px; }
         #attendance-btn { background: linear-gradient(180deg, #ff00de, #9b0082); }
@@ -23,27 +22,22 @@
         .cmd-btn { background: #2ecc71; display: none; }
         .log-btn { background: #ff4757; display: none; }
         
-        /* 잔액 표시 UI */
         #balance-ui { position: absolute; top: 10px; right: 10px; font-size: 18px; font-weight: bold; background: rgba(0,0,0,0.8); padding: 12px 20px; border-radius: 12px; border: 2px solid #ffd700; box-shadow: 0 0 15px #ffd700; z-index: 100; }
         
-        /* 메인 게임 영역 */
         h1 { margin-top: 100px; font-family: 'Black Han Sans', sans-serif; font-size: 50px; text-shadow: 0 0 20px #ff00de; }
         .slot-container { display: inline-flex; gap: 15px; margin: 20px 0; background: #111; padding: 20px; border-radius: 20px; border: 3px solid #333; box-shadow: 0 0 40px #ff00de; }
         .slot { width: 100px; height: 110px; background: linear-gradient(180deg, #fff, #bbb); border-radius: 15px; font-size: 60px; display: flex; justify-content: center; align-items: center; color: black; box-shadow: inset 0 5px 15px rgba(0,0,0,0.5); }
         
-        /* 컨트롤 패널 */
         .controls { background: rgba(20, 30, 40, 0.9); padding: 20px; border-radius: 20px; display: inline-block; max-width: 90%; }
         .bet-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
         .bet-buttons button { padding: 10px; background: #3498db; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; min-width: 60px; font-size: 14px; }
         .btn-spin { background: linear-gradient(180deg, #ff4757, #ff1e34); font-size: 24px; width: 100%; margin-top: 15px; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; border: none; }
         
-        /* 모달 (팝업창) 공통 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 2000; }
         .modal-content { background: #111; width: 90%; max-width: 400px; border-radius: 15px; display: flex; flex-direction: column; padding: 20px; text-align: center; border: 2px solid #555; }
         .modal-content input, .modal-content textarea { width: 90%; padding: 12px; margin: 8px auto; background: #222; border: 1px solid #555; color: white; border-radius: 5px; font-size: 16px; outline: none; box-sizing: border-box; }
         .modal-btn { padding: 12px; margin-top: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 16px; }
         
-        /* 데이터 리스트 (로그, 메시지) */
         .data-list { max-height: 250px; overflow-y: auto; text-align: left; font-family: monospace; padding: 10px; background: #000; border: 1px solid #444; margin-top: 10px; font-size: 14px; color: #ddd; }
         .data-item { border-bottom: 1px solid #333; padding: 8px 0; }
     </style>
@@ -55,18 +49,16 @@
             <h2 style="color:#00ffff; font-family:'Black Han Sans'; font-size:30px;">🎰 LOGIN</h2>
             <input type="text" id="login-id" placeholder="아이디">
             <input type="password" id="login-pw" placeholder="비밀번호">
-            <button class="modal-btn" style="background:#2ecc71;" onclick="window.game.login()">접속하기</button>
+            <button class="modal-btn" style="background:#2ecc71;" onclick="window.game.loginIdPw()">접속하기</button>
         </div>
     </div>
 
     <div id="game-ui" style="display:none;">
         <div id="top-bar">
-            <button id="attendance-btn" class="ui-btn" onclick="alert('출석 완료! (+1,000 코인)')">📅 출석</button>
-            
+            <button id="attendance-btn" class="ui-btn" onclick="alert('출석 완료!')">📅 출석</button>
             <button id="btn-cmd" class="ui-btn cmd-btn" onclick="document.getElementById('cmd-overlay').style.display='flex'">⌨️ 명령어</button>
             <button id="btn-log" class="ui-btn log-btn" onclick="window.game.openLogs()">📩 알림(로그)</button>
             <button id="btn-ban-req" class="ui-btn admin-btn" onclick="window.game.openBanRequest()">📢 밴 건의함</button>
-            
             <button id="btn-dev-msg" class="ui-btn dev-btn" onclick="window.game.openDevMessages()">📬 메시지함(개발자)</button>
         </div>
 
@@ -99,51 +91,37 @@
         </div>
     </div>
 
-    <div id="cmd-overlay" class="modal-overlay">
-        <div class="modal-content" style="border-color: #2ecc71;">
-            <h3 style="color:#2ecc71; margin-top:0;">⌨️ 관리자 명령어</h3>
-            <p style="font-size:12px; color:#aaa; text-align:left; margin-bottom:5px;">
-                사용법: /명령어 대상아이디 수량<br>
-                개발자: /give, /set, /admin, /deadmin, /ban<br>
-                어드민: /give, /set (최대 1만 코인 제한)
-            </p>
-            <input type="text" id="cmd-input" placeholder="예: /give user1 10k" autocomplete="off">
-            <button class="modal-btn" style="background:#2ecc71;" onclick="window.game.executeCommand()">실행</button>
-            <button class="modal-btn" style="background:#444;" onclick="document.getElementById('cmd-overlay').style.display='none'">닫기</button>
-        </div>
-    </div>
+    <div id="cmd-overlay" class="modal-overlay"><div class="modal-content">
+        <h3>⌨️ 명령어</h3>
+        <input type="text" id="cmd-input" placeholder="/명령어 대상 수량">
+        <button class="modal-btn" style="background:#2ecc71;" onclick="window.game.executeCommand()">실행</button>
+        <button class="modal-btn" style="background:#444;" onclick="document.getElementById('cmd-overlay').style.display='none'">닫기</button>
+    </div></div>
 
-    <div id="ban-req-overlay" class="modal-overlay">
-        <div class="modal-content" style="border-color: #3498db;">
-            <h3 style="color:#3498db; margin-top:0;">📢 밴(정지) 요청</h3>
-            <input type="text" id="req-target" placeholder="정지할 아이디">
-            <input type="text" id="req-myid" placeholder="본인 아이디 (자동입력)">
-            <textarea id="req-reason" rows="3" placeholder="사유를 자세히 적어주세요"></textarea>
-            <button class="modal-btn" style="background:#3498db;" onclick="window.game.sendBanRequest()">개발자에게 전송</button>
-            <button class="modal-btn" style="background:#444;" onclick="document.getElementById('ban-req-overlay').style.display='none'">닫기</button>
-        </div>
-    </div>
+    <div id="ban-req-overlay" class="modal-overlay"><div class="modal-content">
+        <h3>📢 밴 요청</h3>
+        <input type="text" id="req-target" placeholder="정지할 아이디">
+        <input type="text" id="req-myid" placeholder="내 아이디">
+        <textarea id="req-reason" placeholder="사유 적기"></textarea>
+        <button class="modal-btn" style="background:#3498db;" onclick="window.game.sendBanRequest()">전송</button>
+        <button class="modal-btn" style="background:#444;" onclick="document.getElementById('ban-req-overlay').style.display='none'">닫기</button>
+    </div></div>
 
-    <div id="dev-msg-overlay" class="modal-overlay">
-        <div class="modal-content" style="border-color: #f39c12; width: 95%; max-width: 500px;">
-            <h3 style="color:#f39c12; margin-top:0;">📬 수신된 건의함 (밴 요청)</h3>
-            <div id="dev-msg-content" class="data-list">불러오는 중...</div>
-            <button class="modal-btn" style="background:#444;" onclick="document.getElementById('dev-msg-overlay').style.display='none'">닫기</button>
-        </div>
-    </div>
+    <div id="dev-msg-overlay" class="modal-overlay"><div class="modal-content">
+        <h3>📬 개발자 메시지함</h3>
+        <div id="dev-msg-content" class="data-list"></div>
+        <button class="modal-btn" onclick="document.getElementById('dev-msg-overlay').style.display='none'">닫기</button>
+    </div></div>
 
-    <div id="log-overlay" class="modal-overlay">
-        <div class="modal-content" style="border-color: #ff4757; width: 95%; max-width: 500px;">
-            <h3 style="color:#ff4757; margin-top:0;">🚨 시스템 보안 로그</h3>
-            <div id="log-content" class="data-list">불러오는 중...</div>
-            <button class="modal-btn" style="background:#444;" onclick="document.getElementById('log-overlay').style.display='none'">닫기</button>
-        </div>
-    </div>
+    <div id="log-overlay" class="modal-overlay"><div class="modal-content">
+        <h3>🚨 시스템 로그</h3>
+        <div id="log-content" class="data-list"></div>
+        <button class="modal-btn" onclick="document.getElementById('log-overlay').style.display='none'">닫기</button>
+    </div></div>
 
     <script>
-    (function() {
-        // 🔴 반드시 여기에 본인의 Firebase Config 값을 넣어주세요!
-        const firebaseConfig = {
+    // 🔴 [중요] Firebase Config 설정 반드시 입력!
+    const firebaseConfig = {
   apiKey: "AIzaSyBF9sb_UYjPt6J_O7g6p4FkLSbggUC6cfM",
   authDomain: "gumurings-slot-game.firebaseapp.com",
   projectId: "gumurings-slot-game",
@@ -151,18 +129,17 @@
   messagingSenderId: "1006027725856",
   appId: "1:1006027725856:web:b7e5d7b55eac14dc377045"
 };
-        const DEV_ID = "gumuring"; // 최고 개발자 강제 부여 ID
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const DEV_ID = "gumuring"; // 개발자 권한 부여 아이디
+
+    // 게임 로직을 window.game에 담기
+    window.game = (function() {
         let balance = 0, currentBet = 0, myUID = "", userData = null;
         let isSpinning = false, isAdminAction = false;
-        
-        // 당첨 배율 로직
         const multipliers = { '💎': 10, '💰': 5, '🍀': 3, '💣': 0 };
 
-        // 1k, 1m 등 단위 변환기
         function parseAmount(str) {
             str = String(str).toLowerCase().trim();
             let mult = 1;
@@ -171,20 +148,22 @@
             return (parseFloat(str) || 0) * mult;
         }
 
-        // 로그 기록 시스템
-        async function logAction(targetId, type, message, amount = 0) {
-            await db.collection("logs").add({ targetId, type, message, amount, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        async function logAction(targetId, type, message) {
+            await db.collection("logs").add({ targetId, type, message, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
         }
 
-        window.game = {
-            login: async function() {
+        // 외부에 노출될 함수들 반환
+        return {
+            loginIdPw: async function() {
                 const id = document.getElementById('login-id').value;
                 const pw = document.getElementById('login-pw').value;
+                if(!id || !pw) return alert("입력하세요!");
+
                 const snap = await db.collection("users").where("gameId", "==", id).where("gamePw", "==", pw).get();
-                if(snap.empty) return alert("계정 정보가 일치하지 않습니다.");
+                if(snap.empty) return alert("계정 정보 불일치!");
                 
                 const data = snap.docs[0].data();
-                if(data.isBanned) return alert("❌ 해당 계정은 시스템에 의해 이용 정지(BAN) 되었습니다.");
+                if(data.isBanned) return alert("차단된 계정입니다.");
 
                 myUID = snap.docs[0].id;
                 window.myGameId = id;
@@ -198,41 +177,22 @@
                 db.collection("users").doc(myUID).onSnapshot(doc => {
                     if(!doc.exists) return;
                     let data = doc.data();
-                    
-                    if(data.isBanned) {
-                        alert("게임 플레이 중 계정이 정지되었습니다.");
-                        location.reload();
-                    }
-                    
-                    // 직급 판별 (dev > admin > user)
-                    let role = "user";
-                    if(id === DEV_ID || data.role === "dev") role = "dev";
-                    else if(data.role === "admin") role = "admin";
+                    let role = (id === DEV_ID || data.role === "dev") ? "dev" : (data.role === "admin" ? "admin" : "user");
 
-                    // 버튼 UI 노출 제어
+                    // UI 업데이트
+                    document.getElementById('display-id').innerText = id;
+                    document.getElementById('balance').innerText = Math.floor(data.balance).toLocaleString();
+                    document.getElementById('display-role').innerText = role === "dev" ? "👑 [DEV]" : (role === "admin" ? "🛡️ [ADMIN]" : "👤");
+                    
                     if(role === "dev" || role === "admin") {
                         document.getElementById('btn-cmd').style.display = 'block';
                         document.getElementById('btn-log').style.display = 'block';
                         document.getElementById('btn-ban-req').style.display = 'block';
                     }
-                    if(role === "dev") {
-                        document.getElementById('btn-dev-msg').style.display = 'block';
-                        document.getElementById('display-role').innerText = "👑 [DEV]";
-                    } else if(role === "admin") {
-                        document.getElementById('display-role').innerText = "🛡️ [ADMIN]";
-                    }
+                    if(role === "dev") document.getElementById('btn-dev-msg').style.display = 'block';
 
-                    // 보안 감시
-                    if(userData && data.balance - balance >= 100000 && !isSpinning && !isAdminAction) {
-                        logAction(id, "SUSPICIOUS", `알 수 없는 경로로 +${(data.balance - balance).toLocaleString()} 코인 증가 감지`);
-                    }
-                    
                     balance = data.balance;
-                    userData = data;
-                    userData.currentRole = role; // 앱 내 편의를 위해 저장
-                    
-                    document.getElementById('display-id').innerText = id;
-                    document.getElementById('balance').innerText = Math.floor(balance).toLocaleString();
+                    userData = {...data, currentRole: role};
                 });
             },
 
@@ -240,157 +200,87 @@
             resetBet: () => { currentBet = 0; document.getElementById('current-bet').innerText = "0"; },
 
             spin: async function() {
-                if(isSpinning) return;
-                if(balance < currentBet || currentBet <= 0) return alert("보유 금액이 부족하거나 베팅을 하지 않았습니다.");
-                
+                if(isSpinning || balance < currentBet || currentBet <= 0) return alert("베팅을 확인하세요!");
                 isSpinning = true;
-                const getSymbol = () => {
+                
+                const getS = () => {
                     const r = Math.random() * 100;
-                    if (r < 3) return '💎'; 
-                    if (r < 20) return '💰'; 
-                    if (r < 55) return '🍀'; 
-                    return '💣'; 
+                    return r < 3 ? '💎' : (r < 20 ? '💰' : (r < 55 ? '🍀' : '💣'));
                 };
 
-                const res = [getSymbol(), getSymbol(), getSymbol()];
+                const res = [getS(), getS(), getS()];
                 document.getElementById('slot1').innerText = res[0];
                 document.getElementById('slot2').innerText = res[1];
                 document.getElementById('slot3').innerText = res[2];
 
-                let counts = {}; res.forEach(s => counts[s] = (counts[s] || 0) + 1);
-                let winSymbol = null, matchCount = 0;
-                for(let s in counts) { if(counts[s] >= 2 && s !== '💣') { winSymbol = s; matchCount = counts[s]; break; } }
-
                 let prize = 0;
-                if(winSymbol) {
-                    let finalMult = (matchCount === 3) ? multipliers[winSymbol] * 2 : multipliers[winSymbol];
-                    prize = currentBet * finalMult;
-                    document.getElementById('message').innerHTML = `축하합니다! [${winSymbol}] 당첨!<br>+${prize.toLocaleString()}`;
-                } else {
-                    document.getElementById('message').innerText = "꽝! 다음 기회에...";
+                let counts = {}; res.forEach(s => counts[s] = (counts[s] || 0) + 1);
+                for(let s in counts) {
+                    if(counts[s] >= 2 && s !== '💣') {
+                        prize = currentBet * (counts[s] === 3 ? multipliers[s] * 2 : multipliers[s]);
+                        break;
+                    }
                 }
-                
+
+                document.getElementById('message').innerText = prize > 0 ? `당첨! +${prize.toLocaleString()}` : "꽝!";
                 await db.collection("users").doc(myUID).update({ balance: firebase.firestore.FieldValue.increment(prize - currentBet) });
-                setTimeout(() => { isSpinning = false; }, 1000);
+                setTimeout(() => { isSpinning = false; }, 800);
             },
 
-            // ⌨️ 명령어 실행 로직 (권한 철저 분리)
             executeCommand: async function() {
-                const inputEl = document.getElementById('cmd-input');
-                const cmdText = inputEl.value.trim().split(' ');
-                inputEl.value = '';
-                
-                const command = cmdText[0].toLowerCase();
-                const targetId = cmdText[1];
-                const amount = cmdText[2] ? parseAmount(cmdText[2]) : 0;
-                const role = userData.currentRole; // dev or admin
-
-                if(!targetId) return alert("대상 아이디를 입력하세요.");
+                const input = document.getElementById('cmd-input').value.trim().split(' ');
+                const [cmd, targetId, val] = [input[0].toLowerCase(), input[1], input[2]];
+                if(!targetId) return alert("대상 필요!");
 
                 const snap = await db.collection("users").where("gameId", "==", targetId).get();
-                if(snap.empty) return alert("유저를 찾을 수 없습니다.");
+                if(snap.empty) return alert("유저 없음!");
                 const targetRef = snap.docs[0].ref;
+                const amount = parseAmount(val);
+                const role = userData.currentRole;
 
                 isAdminAction = true;
-
-                try {
-                    // /give 와 /set (어드민 10000 제한 적용)
-                    if (command === '/give' || command === '/set') {
-                        if (role === 'admin' && amount > 10000) return alert("어드민은 수량을 10,000 이하로만 설정할 수 있습니다.");
-                        
-                        if(command === '/give') {
-                            await targetRef.update({ balance: firebase.firestore.FieldValue.increment(amount) });
-                            alert(`${targetId}님에게 ${amount.toLocaleString()} 코인을 추가했습니다.`);
-                            logAction(targetId, "CMD_GIVE", `${window.myGameId}이(가) ${amount} 추가`);
-                        } else {
-                            await targetRef.update({ balance: amount });
-                            alert(`${targetId}님의 잔액을 ${amount.toLocaleString()} 코인으로 고정했습니다.`);
-                            logAction(targetId, "CMD_SET", `${window.myGameId}이(가) 잔액을 ${amount}로 고정`);
-                        }
-                    } 
-                    // 👑 오직 개발자 전용 명령어
-                    else if (role === 'dev') {
-                        if (command === '/admin') { // 어드민 추가
-                            await targetRef.update({ role: 'admin' });
-                            alert(`${targetId}님을 어드민으로 임명했습니다.`);
-                        } 
-                        else if (command === '/deadmin') { // 어드민 권한 해제
-                            await targetRef.update({ role: 'user' });
-                            alert(`${targetId}님의 권한을 해제했습니다.`);
-                        } 
-                        else if (command === '/ban') { // 유저 정지
-                            await targetRef.update({ isBanned: true });
-                            alert(`${targetId} 계정을 영구 정지했습니다.`);
-                            logAction(targetId, "CMD_BAN", `${window.myGameId}에 의해 밴 처리됨`);
-                        } else {
-                            alert("알 수 없는 명령어입니다.");
-                        }
-                    } else {
-                        alert("해당 명령어를 사용할 권한이 없습니다.");
-                    }
-                } catch(e) { alert("명령어 실행 오류!"); }
-
+                if (cmd === '/give' || cmd === '/set') {
+                    if (role === 'admin' && amount > 10000) return alert("어드민은 1만 이하만 가능!");
+                    if (cmd === '/give') await targetRef.update({ balance: firebase.firestore.FieldValue.increment(amount) });
+                    else await targetRef.update({ balance: amount });
+                    alert("처리 완료!");
+                } else if (role === 'dev') {
+                    if (cmd === '/admin') await targetRef.update({ role: 'admin' });
+                    else if (cmd === '/deadmin') await targetRef.update({ role: 'user' });
+                    else if (cmd === '/ban') await targetRef.update({ isBanned: true });
+                    alert("개발자 권한 처리 완료!");
+                }
                 isAdminAction = false;
                 document.getElementById('cmd-overlay').style.display = 'none';
             },
 
-            // 📢 밴 건의함 열기 및 전송
-            openBanRequest: function() {
-                document.getElementById('ban-req-overlay').style.display = 'flex';
-                document.getElementById('req-myid').value = window.myGameId; // 자신 아이디 자동 입력
-            },
             sendBanRequest: async function() {
                 const target = document.getElementById('req-target').value;
-                const reqId = document.getElementById('req-myid').value;
                 const reason = document.getElementById('req-reason').value;
-
-                if(!target || !reason) return alert("정지할 아이디와 사유를 정확히 적어주세요.");
-
-                await db.collection("messages").add({
-                    type: "BAN_REQUEST", targetId: target, requesterId: reqId, reason: reason,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                alert("개발자에게 성공적으로 전송되었습니다.");
-                document.getElementById('req-target').value = '';
-                document.getElementById('req-reason').value = '';
+                await db.collection("messages").add({ type: "BAN_REQUEST", targetId: target, requesterId: window.myGameId, reason, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                alert("전송됨!");
                 document.getElementById('ban-req-overlay').style.display = 'none';
             },
 
-            // 📬 개발자 전용 메시지함 (건의 내역 확인)
             openDevMessages: async function() {
-                document.getElementById('dev-msg-overlay').style.display = 'flex';
                 const content = document.getElementById('dev-msg-content');
-                content.innerHTML = "조회 중...";
-
-                const snap = await db.collection("messages").where("type", "==", "BAN_REQUEST").orderBy("timestamp", "desc").get();
-                if(snap.empty) { content.innerHTML = "수신된 밴 요청이 없습니다."; return; }
-
+                document.getElementById('dev-msg-overlay').style.display = 'flex';
+                const snap = await db.collection("messages").orderBy("timestamp", "desc").get();
                 content.innerHTML = "";
                 snap.forEach(doc => {
                     const d = doc.data();
-                    const time = d.timestamp ? d.timestamp.toDate().toLocaleString() : "방금 전";
-                    content.innerHTML += `
-                        <div class="data-item">
-                            <span style="color:#3498db;">[요청자: ${d.requesterId}]</span> -> <b style="color:#e74c3c;">[정지 대상: ${d.targetId}]</b><br>
-                            <span style="color:#bbb;">사유: ${d.reason}</span><br>
-                            <span style="font-size:11px; color:#666;">${time}</span>
-                        </div>`;
+                    content.innerHTML += `<div class="data-item"><b>${d.targetId}</b> 밴 요청 (by ${d.requesterId})<br>사유: ${d.reason}</div>`;
                 });
             },
 
-            // 📩 보안 로그 보기 (어드민 이상)
             openLogs: async function() {
-                document.getElementById('log-overlay').style.display = 'flex';
                 const content = document.getElementById('log-content');
-                content.innerHTML = "로딩 중...";
-                const snap = await db.collection("logs").orderBy("timestamp", "desc").limit(30).get();
-                
-                content.innerHTML = snap.empty ? "기록된 로그가 없습니다." : "";
+                document.getElementById('log-overlay').style.display = 'flex';
+                const snap = await db.collection("logs").orderBy("timestamp", "desc").limit(20).get();
+                content.innerHTML = "";
                 snap.forEach(doc => {
                     const d = doc.data();
-                    const time = d.timestamp ? d.timestamp.toDate().toLocaleString() : "";
-                    content.innerHTML += `<div class="data-item">[${time}] <b>${d.targetId}</b> : <span style="color:#ff7675">${d.message}</span></div>`;
+                    content.innerHTML += `<div class="data-item">${d.targetId}: ${d.message}</div>`;
                 });
             }
         };
